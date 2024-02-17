@@ -81,7 +81,7 @@ func main() {
 		}
 	}
 
-	for i := 1; i < 60; i++ {
+	for i := 1; i <= settings.CountTables; i++ {
 		fmt.Println(i)
 
 		browserid := randSeq(15)

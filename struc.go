@@ -96,4 +96,5 @@ type Settings struct {
 	SleepSeconds  int    `json:"sleep_seconds"`
 	IsProcessData bool   `json:"is_process_data"`
 	ShopToken     string `json:"shop_token"`
+	CountTables   int    `json:"count_tables"`
 }
