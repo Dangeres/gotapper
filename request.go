@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func post_request(url string, headers map[string][]string, body io.Reader) (io.ReadCloser, int) {
+func post_request(url string, headers map[string][]string, body io.Reader) ([]byte, int) {
 	r, err := http.NewRequest("POST", url, body)
 
 	if err != nil {
@@ -20,5 +20,12 @@ func post_request(url string, headers map[string][]string, body io.Reader) (io.R
 		panic(err)
 	}
 
-	return res.Body, res.StatusCode
+	defer res.Body.Close()
+
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	return bodyBytes, res.StatusCode
 }

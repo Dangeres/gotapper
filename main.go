@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 )
+
+const folderOrder = "order/"
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
@@ -29,7 +32,7 @@ func main() {
 	const url = "https://hard.apitapper.ru/api/order/get"
 	const shop_token = "stiks-4114"
 
-	for i := 1; i < 40; i++ {
+	for i := 1; i < 80; i++ {
 		fmt.Println(i)
 
 		browserid := randSeq(15)
@@ -39,12 +42,12 @@ func main() {
 			TableId:   strconv.Itoa(i),
 			Domen:     shop_token,
 			Guest:     rand.Int(),
-			BrowserId: BrowserId{BrowserId: browserid, Plugin: "fingerprint"},
+			BrowserId: RequestBrowserId{BrowserId: browserid, Plugin: "fingerprint"},
 		}
 
 		body, _ := json.Marshal(body_raw)
 
-		result, status_code := post_request(
+		body_result, status_code := post_request(
 			url,
 			map[string][]string{
 				"Content-Type": {"application/json, text/plain, */*"},
@@ -53,12 +56,11 @@ func main() {
 			bytes.NewBuffer(body),
 		)
 
-		defer result.Close()
-
 		fmt.Println(status_code)
 
 		response := &ResponseTapper{}
-		derr := json.NewDecoder(result).Decode(response)
+
+		derr := json.Unmarshal(body_result, &response)
 
 		if derr != nil {
 			panic(derr)
@@ -66,16 +68,18 @@ func main() {
 
 		if len(response.Result.OrdersElementAll) > 0 {
 			fmt.Println("<<<<<<<<<<<<<<<<<<<<<<<<")
-		}
 
-		fmt.Println(response)
+			fmt.Println(string(body_result))
 
-		if len(response.Result.OrdersElementAll) > 0 {
+			writeJson(strings.Join([]string{folderOrder, response.Result.Orders[0].OrderId, ".json"}, ""), body_result)
+
 			fmt.Println("<<<<<<<<<<<<<<<<<<<<<<<<")
+		} else {
+			fmt.Println(response)
 		}
 
 		fmt.Println("==========================")
 	}
 
-	fmt.Println("okay")
+	fmt.Println("program has been finished")
 }

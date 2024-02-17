@@ -1,5 +1,15 @@
 package main
 
+type ResponseOrder struct {
+	OrderId          string `json:"order_id"`
+	ShopId           string `json:"shops_id"`
+	SessionId        string `json:"sessions_id"`
+	Id               int    `json:"id"`
+	ExternalWaiterId string `json:"external_waiter_id"`
+	FullPaySum       int    `json:"fullPaySum"`
+	// UserId  any  `json:"users_id"`
+}
+
 type ResponseOrderElementTapper struct {
 	PositionId  string  `json:"position_id"`
 	Sort        int     `json:"sort"`
@@ -11,11 +21,11 @@ type ResponseOrderElementTapper struct {
 	Id          int     `json:"id"`
 	Status      string  `json:"status"`
 	StatusPay   bool    `json:"status_pay"`
-	Amount      int     `json:"amount"`
+	Amount      float64 `json:"amount"`
 	Coefficient float64 `json:"coefficient"`
 }
 
-type UserTapper struct {
+type ResponseUser struct {
 	Id                  int    `json:"id"`
 	Name                string `json:"name"`
 	LastName            string `json:"last_name"`
@@ -32,14 +42,15 @@ type UserTapper struct {
 	DeletedAt           string `json:"deleted_at"`
 }
 
-type WaiterTapper struct {
-	User UserTapper `json:"user"`
+type ResponseWaiter struct {
+	User ResponseUser `json:"user"`
 }
 
-type ResponseResultTapper struct {
+type ResponseResult struct {
 	OrdersElementAll []ResponseOrderElementTapper `json:"ordersElementAll"`
 	Prepayment       int                          `json:"prepayment"`
-	Waiter           WaiterTapper                 `json:"waiter"`
+	Waiter           ResponseWaiter               `json:"waiter"`
+	Orders           []ResponseOrder              `json:"orders"`
 	// TableCode        string                       `json:"tableCode"`
 	Guest            int    `json:"guest"`
 	Discount         int    `json:"discount"`
@@ -52,20 +63,20 @@ type ResponseResultTapper struct {
 }
 
 type ResponseTapper struct {
-	Active  bool                 `json:"active"`
-	Result  ResponseResultTapper `json:"result"`
-	Success bool                 `json:"success"`
+	Active  bool           `json:"active"`
+	Result  ResponseResult `json:"result"`
+	Success bool           `json:"success"`
 }
 
-type BrowserId struct {
+type RequestBrowserId struct {
 	BrowserId string `json:"browserId"`
 	Plugin    string `json:"plugin"`
 }
 
 type RequestTapper struct {
-	TableId   string    `json:"table_id"`
-	Domen     string    `json:"domen"`
-	Guest     int       `json:"guest"`
-	Session   string    `json:"session"`
-	BrowserId BrowserId `json:"browser_id"`
+	TableId   string           `json:"table_id"`
+	Domen     string           `json:"domen"`
+	Guest     int              `json:"guest"`
+	Session   string           `json:"session"`
+	BrowserId RequestBrowserId `json:"browser_id"`
 }
