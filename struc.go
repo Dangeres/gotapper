@@ -80,3 +80,14 @@ type RequestTapper struct {
 	Session   string           `json:"session"`
 	BrowserId RequestBrowserId `json:"browser_id"`
 }
+
+type CustomPriceAmount struct {
+	Price  int     `json:"price"`
+	Amount float64 `json:"amount"`
+}
+
+type CustomPositions struct {
+	PositionId string                       `json:"position_id"`
+	Title      string                       `json:"title"`
+	Orders     map[string]CustomPriceAmount `json:"orders"`
+}
