@@ -81,58 +81,62 @@ func main() {
 		}
 	}
 
-	for i := 1; i <= settings.CountTables; i++ {
-		fmt.Println(i)
+	for {
+		for i := 1; i <= settings.CountTables; i++ {
+			fmt.Println(i)
 
-		browserid := randSeq(15)
-		fmt.Println(browserid)
+			browserid := randSeq(15)
+			fmt.Println(browserid)
 
-		body_raw := RequestTapper{
-			TableId:   strconv.Itoa(i),
-			Domen:     settings.ShopToken,
-			Guest:     rand.Int(),
-			BrowserId: RequestBrowserId{BrowserId: browserid, Plugin: "fingerprint"},
-		}
-
-		body, _ := json.Marshal(body_raw)
-
-		body_result, status_code := post_request(
-			url,
-			map[string][]string{
-				"Content-Type": {"application/json, text/plain, */*"},
-				"User-Agent":   {"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 YaBrowser/24.1.0.0 Safari/537.36"},
-			},
-			bytes.NewBuffer(body),
-		)
-
-		fmt.Println(status_code)
-
-		response := ResponseTapper{}
-
-		derr := json.Unmarshal(body_result, &response)
-
-		if derr != nil {
-			panic(derr)
-		}
-
-		if len(response.Result.OrdersElementAll) > 0 {
-			fmt.Println("<<<<<<<<<<<<<<<<<<<<<<<<")
-
-			fmt.Println(string(body_result))
-
-			writeJson(strings.Join([]string{folderOrder, response.Result.Orders[0].OrderId, ".json"}, ""), body_result)
-
-			if settings.IsProcessData {
-				changePositions(response)
+			body_raw := RequestTapper{
+				TableId:   strconv.Itoa(i),
+				Domen:     settings.ShopToken,
+				Guest:     rand.Int(),
+				BrowserId: RequestBrowserId{BrowserId: browserid, Plugin: "fingerprint"},
 			}
 
-			fmt.Println("<<<<<<<<<<<<<<<<<<<<<<<<")
-		} else {
-			fmt.Printf("На столике %d никто не сидит\n", i)
+			body, _ := json.Marshal(body_raw)
+
+			body_result, status_code := post_request(
+				url,
+				map[string][]string{
+					"Content-Type": {"application/json, text/plain, */*"},
+					"User-Agent":   {"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 YaBrowser/24.1.0.0 Safari/537.36"},
+				},
+				bytes.NewBuffer(body),
+			)
+
+			fmt.Println(status_code)
+
+			response := ResponseTapper{}
+
+			derr := json.Unmarshal(body_result, &response)
+
+			if derr != nil {
+				panic(derr)
+			}
+
+			if len(response.Result.OrdersElementAll) > 0 {
+				fmt.Println("<<<<<<<<<<<<<<<<<<<<<<<<")
+
+				fmt.Println(string(body_result))
+
+				writeJson(strings.Join([]string{folderOrder, response.Result.Orders[0].OrderId, ".json"}, ""), body_result)
+
+				if settings.IsProcessData {
+					changePositions(response)
+				}
+
+				fmt.Println("<<<<<<<<<<<<<<<<<<<<<<<<")
+			} else {
+				fmt.Printf("На столике %d никто не сидит\n", i)
+			}
+
+			fmt.Println("==========================")
 		}
 
-		fmt.Println("==========================")
-	}
+		fmt.Printf("Ожидаем %d секунд перед новым циклом", settings.SleepSeconds)
 
-	fmt.Println("program has been finished")
+		time.Sleep(time.Duration(settings.SleepSeconds * int(time.Second)))
+	}
 }
