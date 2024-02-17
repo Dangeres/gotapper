@@ -91,3 +91,9 @@ type CustomPositions struct {
 	Title      string                       `json:"title"`
 	Orders     map[string]CustomPriceAmount `json:"orders"`
 }
+
+type Settings struct {
+	SleepSeconds  int    `json:"sleep_seconds"`
+	IsProcessData bool   `json:"is_process_data"`
+	ShopToken     string `json:"shop_token"`
+}

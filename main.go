@@ -13,7 +13,7 @@ import (
 
 const folderOrder = "order/"
 const folderPosition = "position/"
-const processData = false
+const fileSettings = "settings.json"
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
@@ -57,9 +57,11 @@ func changePositions(data ResponseTapper) {
 
 func main() {
 	const url = "https://hard.apitapper.ru/api/order/get"
-	const shop_token = "stiks-4114"
 
-	if processData {
+	var settings Settings
+	json.Unmarshal(readJson(fileSettings), &settings)
+
+	if settings.IsProcessData {
 		entries, _ := os.ReadDir(folderOrder)
 
 		for _, f := range entries {
@@ -79,7 +81,7 @@ func main() {
 		}
 	}
 
-	for i := 1; i < 80; i++ {
+	for i := 1; i < 60; i++ {
 		fmt.Println(i)
 
 		browserid := randSeq(15)
@@ -87,7 +89,7 @@ func main() {
 
 		body_raw := RequestTapper{
 			TableId:   strconv.Itoa(i),
-			Domen:     shop_token,
+			Domen:     settings.ShopToken,
 			Guest:     rand.Int(),
 			BrowserId: RequestBrowserId{BrowserId: browserid, Plugin: "fingerprint"},
 		}
@@ -120,7 +122,7 @@ func main() {
 
 			writeJson(strings.Join([]string{folderOrder, response.Result.Orders[0].OrderId, ".json"}, ""), body_result)
 
-			if processData {
+			if settings.IsProcessData {
 				changePositions(response)
 			}
 
