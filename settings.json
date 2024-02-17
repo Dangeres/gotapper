@@ -1,5 +1,5 @@
 {
-    "sleep_seconds": 60,
+    "sleep_seconds": 300,
     "is_process_data": false,
     "shop_token": "stiks-4114",
     "count_tables": 60

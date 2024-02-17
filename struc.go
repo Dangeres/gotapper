@@ -98,3 +98,9 @@ type Settings struct {
 	ShopToken     string `json:"shop_token"`
 	CountTables   int    `json:"count_tables"`
 }
+
+type SavedResponse struct {
+	Body  string `json:"body"`
+	Time  int64  `json:"time"`
+	Table int    `json:"table"`
+}

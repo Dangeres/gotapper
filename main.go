@@ -31,7 +31,11 @@ func randSeq(n int) string {
 	return string(b)
 }
 
-func changePositions(data ResponseTapper) {
+func changePositions(response SavedResponse) {
+	data := ResponseTapper{}
+
+	json.Unmarshal([]byte(response.Body), &data)
+
 	for _, p := range data.Result.OrdersElementAll {
 		filePath := strings.Join([]string{folderPosition, p.PositionId, ".json"}, "")
 
@@ -65,11 +69,11 @@ func main() {
 		entries, _ := os.ReadDir(folderOrder)
 
 		for _, f := range entries {
-			fmt.Printf("Обрабатываем позиции файла заказа %s", f.Name())
+			fmt.Printf("Обрабатываем позиции файла заказа %s\n", f.Name())
 
 			dataFile := readJson(strings.Join([]string{folderOrder, f.Name()}, ""))
 
-			response := ResponseTapper{}
+			response := SavedResponse{}
 
 			derr := json.Unmarshal(dataFile, &response)
 
@@ -121,10 +125,17 @@ func main() {
 
 				fmt.Println(string(body_result))
 
-				writeJson(strings.Join([]string{folderOrder, response.Result.Orders[0].OrderId, ".json"}, ""), body_result)
+				data := SavedResponse{Body: string(body_result), Time: time.Now().Unix(), Table: i}
+
+				saved_request, _ := json.Marshal(data)
+
+				writeJson(strings.Join(
+					[]string{folderOrder, response.Result.Orders[0].OrderId, ".json"}, ""),
+					saved_request,
+				)
 
 				if settings.IsProcessData {
-					changePositions(response)
+					changePositions(data)
 				}
 
 				fmt.Println("<<<<<<<<<<<<<<<<<<<<<<<<")
@@ -135,7 +146,7 @@ func main() {
 			fmt.Println("==========================")
 		}
 
-		fmt.Printf("Ожидаем %d секунд перед новым циклом", settings.SleepSeconds)
+		fmt.Printf("Ожидаем %d секунд перед новым циклом\n", settings.SleepSeconds)
 
 		time.Sleep(time.Duration(settings.SleepSeconds * int(time.Second)))
 	}
