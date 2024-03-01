@@ -1,6 +1,5 @@
 order/
 position/
 
-go.mod
 .DS_Store
-__debug_bin
+__debug_bin*
